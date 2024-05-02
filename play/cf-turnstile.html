@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cloudflare Turnstile</title>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", (e) => {
+        console.log(turnstile);
+        const tokenElem = document.getElementById("token");
+        const submitBtn = document.getElementById("submit");
+
+        submitBtn.disabled = false;
+        submitBtn.addEventListener("click", (e) => {
+          console.log("Submit clicked");
+          if (tokenElem.innerText) {
+            console.log("Token:", tokenElem.innerText);
+          } else {
+            turnstile.render("#root", {
+              sitekey: "0x4AAAAAAAZFfB8IEkVYp5pO",
+              // sitekey: "2x00000000000000000000BB",
+              callback: (token) => {
+                console.log(token);
+                tokenElem.innerText = token;
+                submitBtn.disabled = false;
+              },
+              'error-callback': (error) => {
+                console.error(error);
+                tokenElem.innerText = "";
+                submitBtn.disabled = true;
+              },
+              'expired-callback': () => {
+                console.error("Token expired")
+                tokenElem.innerText = "";
+                submitBtn.disabled = true;
+              },
+            })
+          }
+        });
+      })
+    </script>
+  </head>
+  <body>
+    <div id="root">Test</div>
+    <div id="token"></div>
+    <button id="submit" disabled>Submit</button>
+  </body>
+</html>
